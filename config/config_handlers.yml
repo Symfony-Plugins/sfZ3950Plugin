@@ -1,0 +1,3 @@
+config/z3950.yml:
+  class:    sfZ3950ConfigHandler
+  file:     <?php echo realpath(dirname(__FILE__) . '/../lib/config/sfZ3950ConfigHandler.class.php'); ?>

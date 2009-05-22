@@ -1,0 +1,15 @@
+all:
+  connection_name:
+    class:          sfZ3950Database
+    param:
+      dsn:          yaz://user:pass@url:port/dbname
+      options:
+        protocol:   2
+        group:      test
+        cookie:     cookie_name
+        proxy:      proxy_name
+        persistent: false
+        piggyback:  true
+        charset:    UTF-8
+        preferredMessageSize: 10240
+        maximumRecordSize:  10240

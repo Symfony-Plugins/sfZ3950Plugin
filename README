@@ -1,0 +1,132 @@
+sfZ3950Plugin
+=============
+
+The `sfZ3950Plugin` is an interface for a server using the Z39.50 protocol.
+
+
+Installation
+------------
+* Install the plugin
+  
+    $ symfony plugin-install http://plugins.symfony-project.com/sfZ3950Plugin
+
+
+Configuration
+-------------
+
+* Define connection into databases.yml
+  [yml]
+  all:
+    connection_name:
+      class:          sfZ3950Database
+      param:
+        dsn:          yaz://user:pass@url:port/dbname
+        options:
+          protocol:   2
+          group:      test
+          cookie:     cookie_name
+          proxy:      proxy_name
+          persistent: false
+          piggyback:  true
+          charset:    UTF-8
+          preferredMessageSize: 10240
+          maximumRecordSize:  10240
+
+
+* Define index used by the connection into config/z3950.yml
+  [yml]
+  prod:
+    connection_name:
+      indexes:
+        ti: 1=4
+        au: 1=1003
+        aw: 1=1035
+
+
+Examples
+--------
+
+* Request with a return type of raw (all records):
+  [php]
+    $this->results = sfZ3950_Query::create()
+    ->from('connection_name')
+    ->where('au="totok" and ti="Handbuch"')
+    ->orderBy('au ASC')
+    ->execute();
+
+* Request with a return type of raw (one record):
+  [php]
+    $this->results = sfZ3950_Query::create()
+    ->from('connection_name')
+    ->where('au="totok" and ti="Handbuch"')
+    ->fetchOne();
+
+* Request with a return type of raw (limit):
+  [php]
+    $this->results = sfZ3950_Query::create()
+    ->from('connection_name')
+    ->where('au="totok" and ti="Handbuch"')
+    ->limit(0,10)
+    ->execute();
+
+* Request with a return type of string (all records):
+  [php]
+    $this->results = sfZ3950_Query::create()
+    ->from('connection_name')
+    ->where('au="totok" and ti="Handbuch"')
+    ->orderBy('au ASC')
+    ->execute(sfZ3950_Record::TYPE_STRING);
+
+* Request with a return type of xml (all records):
+  [php]
+    $this->results = sfZ3950_Query::create()
+    ->from('connection_name')
+    ->where('au="totok" and ti="Handbuch"')
+    ->orderBy('au ASC')
+    ->execute(sfZ3950_Record::TYPE_XML);
+
+Allowed parameters:
+- Type: TYPE_STRING, TYPE_RAW, TYPE_XML, TYPE_SYNTAX, TYPE_ARRAY;
+- Order:
+  - ASC: Sort ascending
+  - IASC: Sort ascending, Case insensitive sorting
+  - SASC: Sort ascending, Case sensitive sorting
+  - DESC: Sort descending
+  - IDESC: Sort descending, Case insensitive sorting
+  - SDESC: Sort descending, Case sensitive sorting
+
+
+Pager
+-----
+
+* Action:
+  [php]
+  $this->pager = new sfZ3950_Pager('connection_name', 10);
+
+  $this->pager->getQuery()
+  ->where('au="totok"')
+  ->orderBy('ti ASC');
+
+  $this->pager->setPage($request->getParameter('page', 1));
+
+  $this->pager->init();
+
+
+* Template:
+  [html]
+  <div id="record">
+    Count: <?php echo $pager->getNbResults(); ?><br />
+    <?php foreach($pager->getResults(sfZ3950_Record::TYPE_STRING) AS $result): ?>
+      <pre>
+      <?php echo $result; ?>
+      </pre>
+      <hr />
+    <?php endforeach; ?>
+  </div>
+
+
+Required
+--------
+
+- [YAZ Client 3](http://www.indexdata.dk/yaz/)
+- [PHP YAZ](http://pecl.php.net/package/yaz)

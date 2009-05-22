@@ -1,0 +1,5 @@
+all:
+  connection_name:
+    indexes:
+      ti: 1=4
+      au: 1=1003
