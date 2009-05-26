@@ -21,6 +21,7 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
   public function __construct(sfWebDebug $webDebug)
   {
     parent::__construct($webDebug);
+    $this->webDebug->getEventDispatcher()->connect('debug.web.filter_logs', array($this, 'filterLogs'));
   }
   
   public function getTitle()
@@ -38,16 +39,9 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
   
   public function getPanelContent()
   {
-    $logs = array();
-    
-    foreach ($this->getZ3950Logs() as $log)
-    {
-      $logs[] = htmlspecialchars($log, ENT_QUOTES, sfConfig::get('sf_charset'));
-    }
-    
     return '
       <div id="sfWebDebugDatabaseLogs">
-      <ol><li>'.implode("</li>\n<li>", $logs).'</li></ol>
+      <ol><li>'.implode("</li>\n<li>", $this->getZ3950Logs()).'</li></ol>
       </div>
     ';
     
@@ -60,10 +54,23 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
   }
   
   
+  public function filterLogs(sfEvent $event, $newZ3950logs)
+  {
+    $newLogs = array();
+    foreach ($newZ3950logs as $newZ3950log)
+    {
+      if ('sfZ3950Logger' != $newZ3950log['type'])
+      {
+        $newLogs[] = $newZ3950log;
+      }
+    }
+
+    return $newLogs;
+  }
+  
   protected function getZ3950Logs()
   {
     $logs = array();
-    $bindings = array();
     $i = 0;
     foreach ($this->webDebug->getLogger()->getLogs() as $log)
     {
@@ -72,9 +79,25 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
         continue;
       }
       
-      $logs[$i++] = $log['message'];
+      $logs[$i++] = self::formatZ3950($log['message']);
     }
     
     return $logs;
+  }
+  
+  
+  static protected function formatZ3950($mes)
+  {
+    $color_a = '#009900';
+    $color_b = '#000099';
+    $color_c = '#900009';
+    
+    $mes = preg_replace('/^(.*:)?/', "<b>$1</b>", $mes);
+    
+    $mes = str_replace('@and', "<span style=\"color: $color_a;\"><b>@and</b></span>", $mes);
+    $mes = str_replace('@or', "<span style=\"color: $color_a;\"><b>@or</b></span>", $mes);
+    
+    $mes = preg_replace('/@attr?\s((\S*=\S*) (\S*))/', "<span style=\"color: $color_b;\"><b>@attr $2</b></span> <span style=\"color: $color_c;\"><b><i>$3</i></b></span> ", $mes);
+    return $mes;
   }
 }
