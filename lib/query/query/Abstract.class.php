@@ -94,7 +94,12 @@ abstract class sfZ3950_Query_Abstract
     
     if (sfConfig::get('sf_debug') && sfConfig::get('sf_logging_enabled'))
     {
-      $this->logger->log($parts['from'].': '.$parts['rpn']);
+      $mes = $parts['from'].': '.$parts['rpn'];
+      if(isset($this->_parts['limit']))
+      {
+        $mes .= ' (limit '.$this->_parts['limit']['start'].' :: '.$this->_parts['limit']['end'].')';
+      }
+      $this->logger->log($mes);
     }
     
     $parts['error_no'] = yaz_errno($conn);

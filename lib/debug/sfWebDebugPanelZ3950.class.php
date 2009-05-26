@@ -88,16 +88,27 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
   
   static protected function formatZ3950($mes)
   {
-    $color_a = '#009900';
-    $color_b = '#000099';
-    $color_c = '#900009';
+    $color_a = '#CC0033';
+    $color_b = '#0000FF';
+    $color_c = '#339900';
+    $color_d = '#9933CC';
     
-    $mes = preg_replace('/^(.*:)?/', "<b>$1</b>", $mes);
+    $indexes = sfConfig::get('sfZ3950_'.preg_replace('/^(.*?):.*/', '$1', $mes).'_indexes');
+    $indexes = array_flip($indexes);
+    
+    $mes = "<b>$mes</b>";
+    
+    foreach($indexes AS $key => $value)
+    {
+      $mes = str_replace($key, "<span style=\"color: $color_c;\"><b>$key</b></span>", $mes);
+    }
     
     $mes = str_replace('@and', "<span style=\"color: $color_a;\"><b>@and</b></span>", $mes);
     $mes = str_replace('@or', "<span style=\"color: $color_a;\"><b>@or</b></span>", $mes);
     
-    $mes = preg_replace('/@attr?\s((\S*=\S*) (\S*))/', "<span style=\"color: $color_b;\"><b>@attr $2</b></span> <span style=\"color: $color_c;\"><b><i>$3</i></b></span> ", $mes);
+    $mes = preg_replace('/(@attr)/', "<span style=\"color: $color_b\"><b>$1</b></span>", $mes);
+    $mes = preg_replace('/(\(limit.*\))/', "<span style=\"color: $color_d\"><b>$1</b></span>", $mes);
+    
     return $mes;
   }
 }
