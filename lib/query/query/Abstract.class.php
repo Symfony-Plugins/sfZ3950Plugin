@@ -125,7 +125,10 @@ abstract class sfZ3950_Query_Abstract
   
   private function whereParse($conn, $where)
   {
-    yaz_ccl_parse($conn, $where, $result);
+    if(!yaz_ccl_parse($conn, $where, $result))
+    {
+      throw new sfZ3950Exception(sprintf('Parsing error: %s', $result['errorstring']));
+    }
     return trim($result["rpn"]);
   }
   
