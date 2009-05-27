@@ -97,7 +97,7 @@ abstract class sfZ3950_Query_Abstract
       $mes = $parts['from'].': '.$parts['rpn'];
       if(isset($this->_parts['limit']))
       {
-        $mes .= ' (limit '.$this->_parts['limit']['start'].' :: '.$this->_parts['limit']['end'].')';
+        $mes .= ' (limit '.$this->_parts['limit']['start'].','.$this->_parts['limit']['end'].')';
       }
       $this->logger->log($mes);
     }
