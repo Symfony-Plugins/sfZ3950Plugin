@@ -100,14 +100,14 @@ class sfWebDebugPanelZ3950 extends sfWebDebugPanel
     
     foreach($indexes AS $key => $value)
     {
-      $mes = str_replace($key, "<span style=\"color: $color_c;\"><b>$key</b></span>", $mes);
+      $mes = str_replace($key, "<span style=\"color: $color_c;\">$key</span>", $mes);
     }
     
-    $mes = str_replace('@and', "<span style=\"color: $color_a;\"><b>@and</b></span>", $mes);
-    $mes = str_replace('@or', "<span style=\"color: $color_a;\"><b>@or</b></span>", $mes);
+    $mes = str_replace('@and', "<span style=\"color: $color_a;\">@and</span>", $mes);
+    $mes = str_replace('@or', "<span style=\"color: $color_a;\">@or</span>", $mes);
     
-    $mes = preg_replace('/(@attr)/', "<span style=\"color: $color_b\"><b>$1</b></span>", $mes);
-    $mes = preg_replace('/(\(limit.*\))/', "<span style=\"color: $color_d\"><b>$1</b></span>", $mes);
+    $mes = preg_replace('/(@attr)/', "<span style=\"color: $color_b\">$1</span>", $mes);
+    $mes = preg_replace('/(\(limit.*\))/', "<span style=\"color: $color_d\">$1</span>", $mes);
     
     return $mes;
   }
